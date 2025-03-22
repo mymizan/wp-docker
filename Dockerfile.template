@@ -1,0 +1,25 @@
+FROM wordpress:latest
+
+# Install additional packages (example: git, unzip, and php extensions)
+RUN apt-get update && apt-get install -y \
+    git \
+    subversion \
+    zip \
+    unzip \
+    vim \
+    openssh-server \
+    && rm -rf /var/lib/apt/lists/* \
+    && mkdir /var/run/sshd
+
+
+# Set root password (⚠️ don't use this in production!)
+RUN echo 'root:rootpassword' | chpasswd
+
+# Allow root login via SSH
+RUN sed -i 's/^#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
+
+# Expose SSH port
+EXPOSE 22
+
+# Start SSH and Apache
+CMD service ssh start
